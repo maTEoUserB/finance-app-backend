@@ -4,20 +4,25 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.finances.finances_app.dto.UserRequest;
-import pl.finances.finances_app.dto.UserResponse;
+import pl.finances.finances_app.dto.requestAndResponse.IndexResponse;
+import pl.finances.finances_app.dto.requestAndResponse.UserRequest;
+import pl.finances.finances_app.dto.requestAndResponse.UserResponse;
+import pl.finances.finances_app.services.AccountService;
 import pl.finances.finances_app.services.UserService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
     private final UserService userService;
+    private final AccountService accountService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, AccountService accountService) {
         this.userService = userService;
+        this.accountService = accountService;
     }
 
-    @PostMapping("/new-user")
+    @PostMapping("/new_user")
     ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest user) {
         return userService.createNewUser(user);
     }
@@ -27,5 +32,8 @@ public class UserController {
         return userService.showUserAccount(username);
     }
 
-
+    @GetMapping("/index/{id}")
+    ResponseEntity<IndexResponse> index(@PathVariable long id) {
+        return accountService.getMainAccountInformations(id);
+    }
 }

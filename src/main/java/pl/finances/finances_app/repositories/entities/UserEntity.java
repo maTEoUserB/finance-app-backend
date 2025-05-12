@@ -1,10 +1,12 @@
 package pl.finances.finances_app.repositories.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -13,38 +15,42 @@ import java.util.Set;
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private long id;
     @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private LocalDate createdAt;
+    @Column(nullable = false)
+    private String role;
+    @Column(nullable = false)
     private double saldo;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<IncomeEntity> incomes;
+    private Set<TransactionEntity> transactions;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<ExpenseEntity> expenses;
+    private Set<ObligationEntity> obligations;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<BudgetEntity> budgets;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<SavingsGoalEntity> savingsGoals;
 
-    public UserEntity(String username, String password) {
+    public UserEntity(@NotNull String username,@NotNull double saldo,@NotNull String password,@NotNull String role) {
         this.username = username;
+        this.saldo = saldo;
         this.password = password;
+        this.role = role;
+        createdAt = LocalDate.now();
     }
 
-    void setId(int id) {
-        this.id = id;
-    }
+    @PrePersist
+    void prePersist(){createdAt = LocalDate.now();}
 
     void setUsername(String username) {
         this.username = username;
     }
 
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
-    }
-
     void setPassword(String password) {
         this.password = password;
     }
-
-    void setIncomes(Set<IncomeEntity> incomes) {this.incomes = incomes;}
-    void setExpenses(Set<ExpenseEntity> expenses) {this.expenses = expenses;}
 }
