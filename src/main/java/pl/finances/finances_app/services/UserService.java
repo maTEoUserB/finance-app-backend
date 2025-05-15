@@ -43,7 +43,7 @@ public class UserService {
         userRepository.save(newUser);
 
         UserResponse userResponse = new UserResponse(newUser.getId(), newUser);
-        return ResponseEntity.created(URI.create("/" + userResponse.id())).body(userResponse);
+        return ResponseEntity.created(URI.create("/user/" + userResponse.id())).body(userResponse);
     }
 
     public Optional<UserEntity> findUserByUsername(String username) {
@@ -52,5 +52,13 @@ public class UserService {
 
     public Optional<UserEntity> findUserById(long id) {
         return userRepository.findById(id);
+    }
+
+    public boolean existsUserById(long id) {
+        return userRepository.existsById(id);
+    }
+
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }

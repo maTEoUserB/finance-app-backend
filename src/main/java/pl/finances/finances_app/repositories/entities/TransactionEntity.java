@@ -35,15 +35,13 @@ public class TransactionEntity {
     @NotNull
     private LocalDate transactionDate;
 
-    public TransactionEntity(@NotNull String transactionTitle, @NotNull double transactionAmount, String transactionDescription, @NotNull UserEntity user, @NotNull CategoryEntity category, @NotNull String transactionType) {
+    public TransactionEntity(@NotNull String transactionTitle, @NotNull double transactionAmount, String transactionDescription, @NotNull UserEntity user, @NotNull CategoryEntity category, @NotNull String transactionType, @NotNull LocalDate transactionDate) {
         this.transactionTitle = transactionTitle;
         this.transactionAmount = transactionAmount;
         this.transactionDescription = transactionDescription;
         this.user = user;
         this.category = category;
         this.transactionType = transactionType;
+        this.transactionDate = transactionDate;
     }
-
-    @PrePersist
-    void prePersist(){transactionDate = LocalDate.now();}
 }

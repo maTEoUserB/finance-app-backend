@@ -1,9 +1,6 @@
 package pl.finances.finances_app.dto;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
-public interface LastTransactionsDTO {
-    String getTransactionTitle();
-    double getAmount();
-    LocalDate getTransactionDate();
+public record LastTransactionsDTO(String transactionTitle, double amount, Date transactionDate) {
 }

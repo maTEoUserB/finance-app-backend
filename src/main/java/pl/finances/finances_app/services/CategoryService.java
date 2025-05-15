@@ -1,11 +1,20 @@
 package pl.finances.finances_app.services;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import pl.finances.finances_app.dto.requestAndResponse.BudgetRequest;
+import pl.finances.finances_app.dto.requestAndResponse.BudgetResponse;
+import pl.finances.finances_app.dto.requestAndResponse.CategoryResponse;
 import pl.finances.finances_app.repositories.CategoryRepository;
 import pl.finances.finances_app.repositories.entities.CategoryEntity;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -16,8 +25,16 @@ public class CategoryService {
         this.categoryRepository = categoryRepository;
     }
 
-
     public Optional<CategoryEntity> findCategoryById(long id) {
         return categoryRepository.findById(id);
+    }
+
+    public ResponseEntity<CategoryResponse> findAllCategories(String categoryType) {
+        Set<String> categories = categoryRepository.getAllByTypeForCategory(categoryType)
+                .orElseThrow(() -> new RuntimeException("Categories not found"))
+                .stream().map(CategoryEntity::getCategoryName).collect(Collectors.toSet());
+
+        CategoryResponse response = new CategoryResponse(categories);
+        return ResponseEntity.ok(response);
     }
 }

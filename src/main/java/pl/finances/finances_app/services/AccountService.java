@@ -34,25 +34,39 @@ public class AccountService {
 
     @Transactional
     public ResponseEntity<IndexResponse> getMainAccountInformations(long id) {
-        if(userService.findUserById(id).isEmpty()) {
+        if(!userService.existsUserById(id)) {
             return ResponseEntity.notFound().build();
         }
 
         UserEntity user = userService.findUserById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
         double saldo = user.getSaldo();
-        double euroRate = exchangeRateService.getEuroExchangeRate();
-        double euroSaldo = new BigDecimal(saldo / euroRate)
-                .setScale(2, RoundingMode.HALF_UP).doubleValue();
+        double savingsBalance = savingsGoalService.getCurrentSavingsBalance(user);
+        double euroRate, usdRate, euroSaldo, usdSaldo, savingsBalanceEuro;
+        try {
+            euroRate = exchangeRateService.getEuroExchangeRate();
+            usdRate = exchangeRateService.getUSDExchangeRate();
+            euroSaldo = new BigDecimal(saldo / euroRate)
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
+            usdSaldo = new BigDecimal(saldo/usdRate)
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
+            savingsBalanceEuro = new BigDecimal(savingsBalance / euroRate)
+                    .setScale(2, RoundingMode.HALF_UP).doubleValue();
+        }catch (Exception e) {
+            euroSaldo = 0.0;
+            usdSaldo = 0.0;
+            savingsBalanceEuro = 0.0;
+        }
+
         double weeklyExpenses = transactionService.getWeeklyExpenses(id);
+        double beforeWeeklyExpenses = transactionService.getBeforeWeekExpenses(id);
+        double denominatorOfWeeklyChange = beforeWeeklyExpenses == 0.0 ? weeklyExpenses : beforeWeeklyExpenses;
+        double weeklyChange = (weeklyExpenses/denominatorOfWeeklyChange * 100.0) - 100.0;
         double meanOfWeeklyExpenses = transactionService.getMeanOfWeeklyExpenses(id);
         List<TopCategoryDTO> topCategories = transactionService.findTopExpenseCategories(id);
-        double savingsBalance = savingsGoalService.getCurrentSavingsBalance(user);
-        double savingsBalanceEuro = new BigDecimal(savingsBalance / euroRate)
-                .setScale(2, RoundingMode.HALF_UP).doubleValue();
         List<NearestObligationsDTO> nearestObligations = obligationService.getNearestObligations(id);
         List<LastTransactionsDTO> lastTransactions = transactionService.findLatestTransactions(id);
 
-        IndexResponse response = new IndexResponse(saldo, euroSaldo, weeklyExpenses, meanOfWeeklyExpenses,
+        IndexResponse response = new IndexResponse(saldo, euroSaldo, usdSaldo, weeklyExpenses, meanOfWeeklyExpenses, weeklyChange,
                 topCategories, savingsBalance, savingsBalanceEuro, nearestObligations, lastTransactions);
 
         return ResponseEntity.ok(response);

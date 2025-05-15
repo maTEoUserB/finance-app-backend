@@ -1,6 +1,7 @@
 package pl.finances.finances_app.services;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class ObligationService {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    @Autowired
     public ObligationService(ObligationRepository obligationRepository, UserService userService, CategoryService categoryService) {
         this.obligationRepository = obligationRepository;
         this.userService = userService;
@@ -38,12 +40,12 @@ public class ObligationService {
         CategoryEntity category = categoryService.findCategoryById(obligation.categoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found."));
 
         ObligationEntity newObligation = new ObligationEntity(user, obligation.title(), obligation.amount(),
-                obligation.dateToPay(), category);
+                obligation.dateToPay(), category, obligation.isDone());
         obligationRepository.save(newObligation);
 
         ObligationResponse response = new ObligationResponse(newObligation.getTitle(), newObligation.getAmount(),
                 newObligation.getDateToPay(), category.getId());
 
-        return ResponseEntity.created(URI.create("/new_obligation/" + newObligation.getId())).body(response);
+        return ResponseEntity.created(URI.create("/new/obligation/" + newObligation.getTitle())).body(response);
     }
 }

@@ -35,12 +35,13 @@ public class ObligationEntity {
     private CategoryEntity category;
 
 
-    public ObligationEntity(@NotNull UserEntity user, @NotNull String title, @NotNull double amount, @NotNull LocalDate dateToPay, @NotNull CategoryEntity category) {
+    public ObligationEntity(@NotNull UserEntity user, @NotNull String title, @NotNull double amount,
+                            @NotNull LocalDate dateToPay, @NotNull CategoryEntity category, @NotNull boolean isDone) {
         this.user = user;
         this.title = title;
         this.amount = amount;
         this.dateToPay = dateToPay;
         this.category = category;
-        this.isDone = false;
+        this.isDone = isDone();
     }
 }

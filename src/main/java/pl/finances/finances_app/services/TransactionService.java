@@ -34,13 +34,23 @@ public class TransactionService {
         UserEntity user = userService.findUserByUsername("user1").orElseThrow(() -> new EntityNotFoundException("User not found."));
         CategoryEntity category = categoryService.findCategoryById(trn.categoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found.")); //kategoria z bazy
         TransactionEntity newTransaction = new TransactionEntity(trn.transactionTitle(), trn.transactionAmount(), trn.transactionDescription(),
-                user, category, trn.transactionType());
+                user, category, trn.transactionType(), trn.transactionDate());
         transactionRepository.save(newTransaction);
 
         TransactionResponse response = new TransactionResponse(newTransaction.getTransactionAmount(),
                 newTransaction.getTransactionType(), newTransaction.getTransactionDate());
 
-        return ResponseEntity.created(URI.create("/new_transaction/" + newTransaction.getId())).body(response);
+        return ResponseEntity.created(URI.create("/new/transaction/" + newTransaction.getTransactionType())).body(response);
+    }
+
+    public ResponseEntity<List<LastTransactionsDTO>> getAllTransactions() {
+        if(!userService.existsByUsername("user1")){
+            return ResponseEntity.notFound().build();
+        }
+        UserEntity user = userService.findUserByUsername("user1").get();
+        List<LastTransactionsDTO> transactions = transactionRepository.getAllTransactions(user.getId());
+
+        return ResponseEntity.ok(transactions);
     }
 
     public double getWeeklyExpenses(long id){
@@ -57,5 +67,9 @@ public class TransactionService {
 
     public List<LastTransactionsDTO> findLatestTransactions(long id) {
         return transactionRepository.findLast3Transactions(id);
+    }
+
+    public double getBeforeWeekExpenses(long id) {
+        return transactionRepository.getBeforeLastWeekExpenses(id);
     }
 }

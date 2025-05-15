@@ -18,7 +18,7 @@ public interface ObligationRepository extends JpaRepository<ObligationEntity, Lo
     void deleteById(Long id);
 
     @Query(value = """
-    SELECT o.title AS obligationTitle, o.is_done AS isDone, o.date_to_pay AS dateToPay, o.amount AS obligationAmount
+    SELECT o.title AS obligationTitle, o.date_to_pay AS dateToPay, o.amount AS obligationAmount
     FROM obligation_entity o
     WHERE o.is_done IS FALSE
     ORDER BY o.date_to_pay ASC
