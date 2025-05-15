@@ -19,8 +19,8 @@ public class SavingsGoalController {
         this.savingsGoalService = savingsGoalService;
     }
 
-    @PostMapping("/new_savings_goal")
-    ResponseEntity<SavingsGoalResponse> createTransaction(@RequestBody @Valid SavingsGoalRequest savingsGoal) {
+    @PostMapping("/new/savings_goal")
+    ResponseEntity<SavingsGoalResponse> createSavingsGoal(@RequestBody @Valid SavingsGoalRequest savingsGoal) {
         return savingsGoalService.createNewSavingsGoal(savingsGoal);
     }
 }

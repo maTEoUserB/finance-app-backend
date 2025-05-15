@@ -1,8 +1,6 @@
 package pl.finances.finances_app.dto;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
-public interface SavingsGoalDTO {
-    String getTitle();
-    LocalDate getDeadline();
+public record SavingsGoalDTO(String title, Date deadline) {
 }

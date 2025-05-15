@@ -31,11 +31,11 @@ public class UserEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<ObligationEntity> obligations;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<BudgetEntity> budgets;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private Set<SavingsGoalEntity> savingsGoals;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<BudgetEntity> budgets;
 
-    public UserEntity(@NotNull String username,@NotNull double saldo,@NotNull String password,@NotNull String role) {
+    public UserEntity(@NotNull String username,@NotNull double saldo, @NotNull String password,@NotNull String role) {
         this.username = username;
         this.saldo = saldo;
         this.password = password;

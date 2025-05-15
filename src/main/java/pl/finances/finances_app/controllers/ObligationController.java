@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import pl.finances.finances_app.dto.requestAndResponse.ObligationRequest;
 import pl.finances.finances_app.dto.requestAndResponse.ObligationResponse;
-import pl.finances.finances_app.dto.requestAndResponse.TransactionRequest;
 import pl.finances.finances_app.services.ObligationService;
 
 @Controller
@@ -18,7 +17,7 @@ public class ObligationController {
         this.obligationService = obligationService;
     }
 
-    @PostMapping("/new_obligation")
+    @PostMapping("/new/obligation")
     ResponseEntity<ObligationResponse> createObligation(@RequestBody @Valid ObligationRequest obligation){
         return obligationService.createNewObligation(obligation);
     }

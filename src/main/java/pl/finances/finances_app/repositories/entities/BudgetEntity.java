@@ -25,15 +25,10 @@ public class BudgetEntity {
     private CategoryEntity category;
     @NotNull
     private double amountLimit;
-    @NotNull
-    private LocalDate startDate;
-    @NotNull
-    private LocalDate endDate;
 
-    public BudgetEntity(@NotNull UserEntity user, @NotNull double amountLimit, @NotNull LocalDate startDate, @NotNull LocalDate endDate) {
+    public BudgetEntity(@NotNull UserEntity user, @NotNull CategoryEntity category, @NotNull double amountLimit) {
         this.user = user;
+        this.category = category;
         this.amountLimit = amountLimit;
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 }

@@ -1,10 +1,6 @@
 package pl.finances.finances_app.dto;
 
-import java.time.LocalDate;
+import java.sql.Date;
 
-public interface NearestObligationsDTO {
-    String getObligationTitle();
-    boolean getIsDone();
-    LocalDate getDateToPay();
-    double getObligationAmount();
+public record NearestObligationsDTO(String obligationTitle, Date dateToPay, double obligationAmount) {
 }

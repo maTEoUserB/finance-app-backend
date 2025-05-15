@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
@@ -21,12 +22,12 @@ public class CategoryEntity {
     private String categoryName;
     @NotNull
     private String typeForCategory; // income/expense/obligation
-    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private BudgetEntity budget;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     private Set<TransactionEntity> transactions;
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category")
     private Set<ObligationEntity> obligations;
+    @OneToOne(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private BudgetEntity budget;
 
     public CategoryEntity(@NotNull String categoryName, @NotNull String typeForCategory) {
         this.categoryName = categoryName;

@@ -37,7 +37,7 @@ public class SavingsGoalService {
         SavingsGoalResponse response = new SavingsGoalResponse(newSavingsGoal.getTitle(), newSavingsGoal.getCurrentAmount(),
                 newSavingsGoal.getFinalAmmount(), newSavingsGoal.getDeadline());
 
-        return ResponseEntity.created(URI.create("/new_savings_goal/" + newSavingsGoal.getId())).body(response);
+        return ResponseEntity.created(URI.create("/new/savings_goal/" + newSavingsGoal.getTitle())).body(response);
     }
 
     public SavingsGoalDTO findLastSavingsGoal(long id) {
