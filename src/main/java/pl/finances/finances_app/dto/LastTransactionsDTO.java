@@ -1,6 +1,7 @@
 package pl.finances.finances_app.dto;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
-public record LastTransactionsDTO(String transactionTitle, double amount, Date transactionDate) {
+public record LastTransactionsDTO(String transactionTitle, String transactionDescription, double amount,
+                                  String category, String type, Timestamp transactionDate) {
 }

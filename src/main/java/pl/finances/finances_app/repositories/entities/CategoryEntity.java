@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 
-@Entity
+@Entity(name = "categories")
 @Getter
 @Setter
 @NoArgsConstructor

@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "transactions")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,7 +26,7 @@ public class TransactionEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private AccountEntity userAccount;
     @NotNull
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -33,13 +34,13 @@ public class TransactionEntity {
     @NotNull
     private String transactionType; // income/expense
     @NotNull
-    private LocalDate transactionDate;
+    private LocalDateTime transactionDate;
 
-    public TransactionEntity(@NotNull String transactionTitle, @NotNull double transactionAmount, String transactionDescription, @NotNull UserEntity user, @NotNull CategoryEntity category, @NotNull String transactionType, @NotNull LocalDate transactionDate) {
+    public TransactionEntity(@NotNull String transactionTitle, @NotNull double transactionAmount, String transactionDescription, @NotNull AccountEntity userAccount, @NotNull CategoryEntity category, @NotNull String transactionType, @NotNull LocalDateTime transactionDate) {
         this.transactionTitle = transactionTitle;
         this.transactionAmount = transactionAmount;
         this.transactionDescription = transactionDescription;
-        this.user = user;
+        this.userAccount = userAccount;
         this.category = category;
         this.transactionType = transactionType;
         this.transactionDate = transactionDate;

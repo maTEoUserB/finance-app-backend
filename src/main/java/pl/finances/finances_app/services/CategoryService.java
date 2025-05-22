@@ -1,13 +1,9 @@
 package pl.finances.finances_app.services;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.finances.finances_app.dto.requestAndResponse.BudgetRequest;
-import pl.finances.finances_app.dto.requestAndResponse.BudgetResponse;
 import pl.finances.finances_app.dto.requestAndResponse.CategoryResponse;
 import pl.finances.finances_app.repositories.CategoryRepository;
 import pl.finances.finances_app.repositories.entities.CategoryEntity;
@@ -17,6 +13,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 

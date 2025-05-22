@@ -3,51 +3,56 @@ package pl.finances.finances_app.services;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.finances.finances_app.dto.SavingsGoalDTO;
 import pl.finances.finances_app.dto.requestAndResponse.SavingsGoalRequest;
 import pl.finances.finances_app.dto.requestAndResponse.SavingsGoalResponse;
 import pl.finances.finances_app.repositories.SavingsGoalRepository;
+import pl.finances.finances_app.repositories.entities.AccountEntity;
 import pl.finances.finances_app.repositories.entities.SavingsGoalEntity;
-import pl.finances.finances_app.repositories.entities.UserEntity;
 
 import java.net.URI;
 
 @Service
+@Transactional
 public class SavingsGoalService {
-    private final SavingsGoalRepository savingsGoalRepository;
     private final UserService userService;
+    private final SavingsGoalRepository savingsGoalRepository;
 
     @Autowired
-    public SavingsGoalService(SavingsGoalRepository savingsGoalRepository, UserService userService) {
-        this.savingsGoalRepository = savingsGoalRepository;
+    public SavingsGoalService(UserService userService, SavingsGoalRepository savingsGoalRepository) {
         this.userService = userService;
+        this.savingsGoalRepository = savingsGoalRepository;
     }
 
-    @Transactional
-    public ResponseEntity<SavingsGoalResponse> createNewSavingsGoal(SavingsGoalRequest savingsGoal){
 
-        UserEntity user = userService.findUserByUsername("user1")
-                .orElseThrow(() -> new EntityNotFoundException("User not found."));
-        SavingsGoalEntity newSavingsGoal = new SavingsGoalEntity(savingsGoal.title(), user,
-                savingsGoal.description(), savingsGoal.currentAmount(), savingsGoal.finalAmmount(), savingsGoal.deadline());
+    public ResponseEntity<SavingsGoalResponse> createNewSavingsGoal(Jwt jwt, SavingsGoalRequest savingsGoal){
+        String username = jwt.getClaimAsString("preferred_username");
+        AccountEntity userAccount = userService.getOrCreateUserAccount(username);
+        SavingsGoalEntity newSavingsGoal = new SavingsGoalEntity(savingsGoal.title(), userAccount,
+                savingsGoal.description(), savingsGoal.currentAmount(), savingsGoal.finalAmount(), savingsGoal.deadline());
         savingsGoalRepository.save(newSavingsGoal);
 
-        SavingsGoalResponse response = new SavingsGoalResponse(newSavingsGoal.getTitle(), newSavingsGoal.getCurrentAmount(),
-                newSavingsGoal.getFinalAmmount(), newSavingsGoal.getDeadline());
+        SavingsGoalResponse response = new SavingsGoalResponse(newSavingsGoal.getGoalTitle(), newSavingsGoal.getCurrentAmount(),
+                newSavingsGoal.getFinalAmmount(), newSavingsGoal.getGoalDeadline());
 
-        return ResponseEntity.created(URI.create("/new/savings_goal/" + newSavingsGoal.getTitle())).body(response);
+        return ResponseEntity.created(URI.create("/new/savings_goal/" + newSavingsGoal.getGoalTitle())).body(response);
     }
 
     public SavingsGoalDTO findLastSavingsGoal(long id) {
-        return savingsGoalRepository.findFirstByUserIdOrderByDeadlineAsc(id)
+        return savingsGoalRepository.findFirstByUserAccount_IdOrderByGoalDeadlineAsc(id)
                 .orElseThrow(() -> new EntityNotFoundException("Savings goal not found."));
     }
 
-    @Transactional
-    public double getCurrentSavingsBalance(UserEntity user) {
-        return user.getSavingsGoals()
+
+    public double getCurrentSavingsBalance(AccountEntity userAccount) {
+        if(userAccount == null || userAccount.getSavingsGoals() == null || userAccount.getSavingsGoals().isEmpty()) {
+            return 0.0;
+        }
+
+        return userAccount.getSavingsGoals()
                 .stream()
                 .mapToDouble(SavingsGoalEntity::getCurrentAmount)
                 .sum();

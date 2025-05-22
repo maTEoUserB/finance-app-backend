@@ -4,41 +4,39 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-@Entity
+@Entity(name = "accounts")
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class AccountEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(unique = true, nullable = false)
     private String username;
     @Column(nullable = false)
-    private String password;
-    @Column(nullable = false)
     private LocalDate createdAt;
     @Column(nullable = false)
     private String role;
+    @Setter
     @Column(nullable = false)
     private double saldo;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userAccount")
     private Set<TransactionEntity> transactions;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userAccount")
     private Set<ObligationEntity> obligations;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userAccount")
     private Set<SavingsGoalEntity> savingsGoals;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userAccount")
     private Set<BudgetEntity> budgets;
 
-    public UserEntity(@NotNull String username,@NotNull double saldo, @NotNull String password,@NotNull String role) {
+    public AccountEntity(@NotNull String username,@NotNull double saldo, @NotNull String role) {
         this.username = username;
         this.saldo = saldo;
-        this.password = password;
         this.role = role;
         createdAt = LocalDate.now();
     }
@@ -46,11 +44,4 @@ public class UserEntity {
     @PrePersist
     void prePersist(){createdAt = LocalDate.now();}
 
-    void setUsername(String username) {
-        this.username = username;
-    }
-
-    void setPassword(String password) {
-        this.password = password;
-    }
 }
