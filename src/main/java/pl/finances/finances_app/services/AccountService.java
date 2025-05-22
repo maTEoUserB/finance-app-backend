@@ -1,6 +1,6 @@
 package pl.finances.finances_app.services;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -9,13 +9,14 @@ import pl.finances.finances_app.dto.LastTransactionsDTO;
 import pl.finances.finances_app.dto.NearestObligationsDTO;
 import pl.finances.finances_app.dto.TopCategoryDTO;
 import pl.finances.finances_app.dto.requestAndResponse.IndexResponse;
-import pl.finances.finances_app.repositories.entities.UserEntity;
-
+import pl.finances.finances_app.repositories.entities.AccountEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
 @Service
+@Transactional
 public class AccountService {
     private final UserService userService;
     private final TransactionService transactionService;
@@ -32,15 +33,14 @@ public class AccountService {
         this.obligationService = obligationService;
     }
 
-    @Transactional
-    public ResponseEntity<IndexResponse> getMainAccountInformations(long id) {
-        if(!userService.existsUserById(id)) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<IndexResponse> getMainAccountInformations(Jwt jwt) {
 
-        UserEntity user = userService.findUserById(id).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        double saldo = user.getSaldo();
-        double savingsBalance = savingsGoalService.getCurrentSavingsBalance(user);
+        String username = jwt.getClaimAsString("preferred_username");
+        AccountEntity userAccount = userService.getOrCreateUserAccount(username);
+        long id = userAccount.getId();
+
+        double saldo = userAccount.getSaldo();
+        double savingsBalance = savingsGoalService.getCurrentSavingsBalance(userAccount);
         double euroRate, usdRate, euroSaldo, usdSaldo, savingsBalanceEuro;
         try {
             euroRate = exchangeRateService.getEuroExchangeRate();
@@ -59,8 +59,15 @@ public class AccountService {
 
         double weeklyExpenses = transactionService.getWeeklyExpenses(id);
         double beforeWeeklyExpenses = transactionService.getBeforeWeekExpenses(id);
-        double denominatorOfWeeklyChange = beforeWeeklyExpenses == 0.0 ? weeklyExpenses : beforeWeeklyExpenses;
-        double weeklyChange = (weeklyExpenses/denominatorOfWeeklyChange * 100.0) - 100.0;
+        double weeklyChange;
+        if(weeklyExpenses == 0.0 && beforeWeeklyExpenses == 0.0){
+            weeklyChange = 0.0;
+        }else if(beforeWeeklyExpenses == 0.0){
+            weeklyChange = 100.0;
+        }else{
+            double denominatorOfWeeklyChange = beforeWeeklyExpenses == 0.0 ? weeklyExpenses : beforeWeeklyExpenses;
+            weeklyChange = (weeklyExpenses/denominatorOfWeeklyChange * 100.0) - 100.0;
+        }
         double meanOfWeeklyExpenses = transactionService.getMeanOfWeeklyExpenses(id);
         List<TopCategoryDTO> topCategories = transactionService.findTopExpenseCategories(id);
         List<NearestObligationsDTO> nearestObligations = obligationService.getNearestObligations(id);

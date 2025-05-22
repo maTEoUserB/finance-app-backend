@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface SavingsGoalRepository extends JpaRepository<SavingsGoalEntity, Long> {
-    Optional<SavingsGoalDTO> findFirstByUserIdOrderByDeadlineAsc(long userId); //metoda Spring Data JPA - automatycznie wybiera dane do SavingsGoalDTO
+    Optional<SavingsGoalDTO> findFirstByUserAccount_IdOrderByGoalDeadlineAsc(long userAccountId); //metoda Spring Data JPA - automatycznie wybiera dane do SavingsGoalDTO
 }

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "obligations")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,15 +18,15 @@ public class ObligationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @NotNull
-    private String title;
+    private String obligationTitle;
     @NotNull
-    private double amount;
+    private double obligationAmount;
     @NotNull
     private boolean isDone;
     @NotNull
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private AccountEntity userAccount;
     @NotNull
     private LocalDate dateToPay;
     @NotNull
@@ -35,13 +35,13 @@ public class ObligationEntity {
     private CategoryEntity category;
 
 
-    public ObligationEntity(@NotNull UserEntity user, @NotNull String title, @NotNull double amount,
-                            @NotNull LocalDate dateToPay, @NotNull CategoryEntity category, @NotNull boolean isDone) {
-        this.user = user;
-        this.title = title;
-        this.amount = amount;
+    public ObligationEntity(@NotNull AccountEntity userAccount, @NotNull String obligationTitle, @NotNull double obligationAmount,
+                            @NotNull LocalDate dateToPay, @NotNull CategoryEntity category) {
+        this.userAccount = userAccount;
+        this.obligationTitle = obligationTitle;
+        this.obligationAmount = obligationAmount;
         this.dateToPay = dateToPay;
         this.category = category;
-        this.isDone = isDone();
+        this.isDone = false;
     }
 }

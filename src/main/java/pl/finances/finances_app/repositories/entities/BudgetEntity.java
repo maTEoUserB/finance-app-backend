@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 
-@Entity
+@Entity(name = "budgets")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,15 +19,15 @@ public class BudgetEntity {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private UserEntity user;
+    private AccountEntity userAccount;
     @OneToOne
     @JoinColumn(name = "category_id", nullable = false, unique = true)
     private CategoryEntity category;
     @NotNull
     private double amountLimit;
 
-    public BudgetEntity(@NotNull UserEntity user, @NotNull CategoryEntity category, @NotNull double amountLimit) {
-        this.user = user;
+    public BudgetEntity(@NotNull AccountEntity userAccount, @NotNull CategoryEntity category, @NotNull double amountLimit) {
+        this.userAccount = userAccount;
         this.category = category;
         this.amountLimit = amountLimit;
     }
